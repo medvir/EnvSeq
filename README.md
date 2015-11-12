@@ -1,2 +1,2 @@
 # EnvSeq
-HIV (env) plasmid sequencing pipeline
+HIV-1 env plasmid sequencing analysis with optim_assembly
