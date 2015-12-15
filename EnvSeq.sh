@@ -1,5 +1,6 @@
 #!/bin/bash
 # HIV-1 env plasmid sequencing analysis with optim_assembly.sh
+# Uses the backbone of the cloning plasmid to subtract reads
 
 ### arguments
 # 1. MiSeq runfolder with gzipped fastq files
@@ -54,7 +55,7 @@ for i in $list; do
 	### copy files and add sample to name of sequence in contigs.fasta and save in ../
 	sed 's/NODE/'$sample'_NODE/' consensus.fasta > ../${sample}_cons.fasta
 	
-	### remove temp files, comment out to debug
+	### remove temp files
 	rm reads_sample.fastq
 	rm reads_plasmid.sam
 	rm reads_plasmid_sorted.bam
