@@ -8,9 +8,11 @@ Arguments:
 2. plasmid backbone to be excluded in fasta format
 3. reference sequence in fasta format
 
-## optimassembly.py
 `optimassembly.py` is from ozagrodi
 
 `pcDNA3_bb.fasta` is the reference for the plasmid (backbone only!)
 
 `HXB2.fasta` is the reference for HIV-1
+
+### Usage
+	usage: EnvSeq.sh RUNFOLDER BACKBONE REFERENCE
