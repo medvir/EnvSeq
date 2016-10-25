@@ -7,4 +7,5 @@ Package (?) for HIV-1 env plasmid sequencing analysis with optim_assembly. Uses 
 `optimassembly.py` is from ozagrodi
 
 `pcDNA3_bb.fasta` is the reference for the plasmid (backbone only!)
+
 `HXB2.fasta` is the reference for HIV-1
