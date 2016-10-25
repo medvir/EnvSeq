@@ -6,20 +6,21 @@
 # 1. MiSeq runfolder with gzipped fastq files
 # 2. plasmid backbone to be excluded in fasta format
 # 3. reference sequence in fasta format
+
 run=$1
 bb=$2
 ref=$3
 
 ### settings
 reads_limit=100000
-expected_length=3000
+expected_length=3500
 
 ### index the plasmid backbone and the reference
 smalt index -k 7 -s 2 plasmid $bb
 smalt index -k 7 -s 2 reference $ref
 
 ### loop over all fastq files
-list=$(find $run/Data/Intensities/BaseCalls | grep fastq.gz )
+list=$(find $run/Data/Intensities/BaseCalls | grep fastq.gz)
 for i in $list; do
 	
 	echo sample $i
@@ -51,9 +52,13 @@ for i in $list; do
 	### optim assembly
 	echo optim assembly of insert reads
 	python3.4 ../../../bin/optimassembly.py -f reads_insert.fastq -r ../$ref -l $expected_length > consensus.fasta
-	
-	### copy files and add sample to name of sequence in contigs.fasta and save in ../
-	sed 's/NODE/'$sample'_NODE/' consensus.fasta > ../${sample}_cons.fasta
+	sed 's/NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
+		
+	### de novo assembly velvet
+	#echo velvet assembly of insert reads
+	#velveth $sample 29 -short -fastq reads_insert.fastq
+	#velvetg $sample -min_contig_lgth 2000
+	#sed 's/NODE/'$sample'_velvet/' $sample/contigs.fa >> ../${sample}_velvet_cons.fasta
 	
 	### remove temp files
 	rm reads_sample.fastq
