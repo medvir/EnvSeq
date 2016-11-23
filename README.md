@@ -8,7 +8,7 @@ Arguments:
 2. plasmid backbone to be excluded in fasta format
 3. reference sequence in fasta format
 
-`optimassembly.py` is from ozagrodi
+`optimassembly.py` is from [ozagordi](https://github.com/ozagordi)
 
 `pcDNA3_bb.fasta` is the reference for the plasmid (backbone only!)
 
