@@ -4,12 +4,28 @@
 
 ### arguments
 # 1. MiSeq runfolder with gzipped fastq files
-# 2. plasmid backbone to be excluded in fasta format
-# 3. reference sequence in fasta format
+# 2. plasmid backbone to be excluded in fasta format (default pcDNA3_bb.fasta)
+# 3. reference sequence in fasta format (default HXB2.fasta)
+
+dir=dirname "$(readlink -f "$0")"
+
+echo $#
+
+exit
+
+if $# == 0; then
+	echo 'Missing arguments'
+	exit
+fi
 
 run=$1
 bb=$2
 ref=$3
+
+
+echo $dir
+
+exit
 
 ### settings
 reads_limit=100000
