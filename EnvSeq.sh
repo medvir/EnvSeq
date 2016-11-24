@@ -2,8 +2,8 @@
 
 ### defaults
 script_dir=$( dirname "$(readlink -f "$0")" )
-bb=${script_dir}/pcDNA3_bb.fasta
-ref=${script_dir}/HXB2.fasta
+backbone=${script_dir}/pcDNA3_bb.fasta
+reference=${script_dir}/HXB2.fasta
 reads_limit=100000
 expected_length=3500
 
@@ -15,7 +15,8 @@ if [ $# == 0 ]; then
 	echo '-r, --reference        refernce (default HXB2.fasta)'
 	echo '-b, --backbone         plasmid backbone to be subtracted (default pcDNA3_bb.fasta'
 	echo '-n, --reads_limit      limit number of reads (default 100000)'
-	echo '-l, --expected_length	 expected insert length (default 3500)'
+	echo '-l, --expected_length  expected insert length (default 3500)'
+	echo
 	exit
 fi
 
@@ -23,11 +24,11 @@ while [[ $# -gt 1 ]]; do
 	key="$1"
 	case $key in
 		-r|--reference)
-		ref="$2"
+		reference="$2"
 		shift # past argument
 		;;
 		-b|--backbone)
-		bb="$2"
+		backbone="$2"
 		shift # past argument
 		;;
 		-n|--reads_limit)
@@ -49,18 +50,21 @@ if [[ -n $1 ]]; then
     sample_dir=$1
 fi
 
+backbone=$( readlink -f $backbone )
+reference=$( readlink -f $reference )
+
 echo
 echo -e 'sample_dir \t' $sample_dir
 echo -e 'script_dir \t' $script_dir
-echo -e 'bb \t\t' $bb
-echo -e 'ref \t\t' $ref
+echo -e 'backbone \t' $backbone
+echo -e 'reference \t' $reference
 echo -e 'reads_limit \t' $reads_limit
 echo -e 'expected_length ' $expected_length
 echo
 
 ### index the plasmid backbone and the reference
-smalt index -k 7 -s 2 plasmid $bb
-smalt index -k 7 -s 2 reference $ref
+smalt index -k 7 -s 2 plasmid $backbone
+smalt index -k 7 -s 2 reference $reference
 
 ### loop over all fastq files
 list=$(find $sample_dir | grep fastq.gz)
@@ -68,6 +72,7 @@ list=$(find $sample_dir | grep fastq.gz)
 for i in $list; do
 	
 	echo sample $i
+	
 	### extract sample name, splits on "/" first and then on "_"
 	arrIN=(${i//// })
 	arrLEN=${#arrIN[@]}
@@ -75,7 +80,8 @@ for i in $list; do
 	FILENAME=${arrIN[$LAST]}
 	ELS=(${FILENAME//_/ })
 	sample=${ELS[0]}
-
+	
+	### create and change to director for each sample
 	mkdir $sample
 	cd $sample
 		
@@ -95,10 +101,10 @@ for i in $list; do
 
 	### optim assembly
 	echo optim assembly of insert reads
-	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r $ref -l $expected_length > consensus.fasta
+	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r $reference -l $expected_length > consensus.fasta
 	sed 's/NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
 		
-	### de novo assembly velvet
+	### de novo assembly velvet NOT IN USE
 	#echo velvet assembly of insert reads
 	#velveth $sample 29 -short -fastq reads_insert.fastq
 	#velvetg $sample -min_contig_lgth 2000
