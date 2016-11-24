@@ -23,26 +23,26 @@ while [[ $# -gt 1 ]]; do
 	key="$1"
 	case $key in
 		-r|--reference)
-    	ref="$2"
-    	shift # past argument
+		ref="$2"
+		shift # past argument
 		;;
 		-b|--backbone)
-    	bb="$2"
-    	shift # past argument
-    	;;
-    	-n|--reads_limit)
-    	reads_limit="$2"
-    	shift # past argument
-    	;;
-    	-l|--expected_length)
-    	expected_length="$2"
-    	shift # past argument
-    	;;
-    	*)
-            # unknown option
-    		;;
-		esac
-		shift # past argument or value
+		bb="$2"
+		shift # past argument
+		;;
+		-n|--reads_limit)
+		reads_limit="$2"
+		shift # past argument
+		;;
+		-l|--expected_length)
+		expected_length="$2"
+		shift # past argument
+		;;
+		*)
+		# unknown option
+		;;
+	esac
+	shift # past argument or value
 done
 
 if [[ -n $1 ]]; then
@@ -95,7 +95,7 @@ for i in $list; do
 
 	### optim assembly
 	echo optim assembly of insert reads
-	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r f$ref -l $expected_length > consensus.fasta
+	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r $ref -l $expected_length > consensus.fasta
 	sed 's/NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
 		
 	### de novo assembly velvet
