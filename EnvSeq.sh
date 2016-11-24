@@ -1,42 +1,70 @@
 #!/bin/bash
-# HIV-1 env plasmid sequencing analysis with optim_assembly.sh
-# Uses the backbone of the cloning plasmid to subtract reads
+
+### defaults
+script_dir=$( dirname "$(readlink -f "$0")" )
+bb=${script_dir}/pcDNA3_bb.fasta
+ref=${script_dir}/HXB2.fasta
+reads_limit=100000
+expected_length=3500
 
 ### arguments
-# 1. MiSeq runfolder with gzipped fastq files
-# 2. plasmid backbone to be excluded in fasta format (default pcDNA3_bb.fasta)
-# 3. reference sequence in fasta format (default HXB2.fasta)
-
-dir=dirname "$(readlink -f "$0")"
-
-echo $#
-
-exit
-
-if $# == 0; then
-	echo 'Missing arguments'
+if [ $# == 0 ]; then
+	echo
+	echo 'EnvSeq.sh [options] ...'
+	echo
+	echo '-r, --reference        refernce (default HXB2.fasta)'
+	echo '-b, --backbone         plasmid backbone to be subtracted (default pcDNA3_bb.fasta'
+	echo '-n, --reads_limit      limit number of reads (default 100000)'
+	echo '-l, --expected_length	 expected insert length (default 3500)'
 	exit
 fi
 
-run=$1
-bb=$2
-ref=$3
+while [[ $# -gt 1 ]]; do
+	key="$1"
+	case $key in
+		-r|--reference)
+    	ref="$2"
+    	shift # past argument
+		;;
+		-b|--backbone)
+    	bb="$2"
+    	shift # past argument
+    	;;
+    	-n|--reads_limit)
+    	reads_limit="$2"
+    	shift # past argument
+    	;;
+    	-l|--expected_length)
+    	expected_length="$2"
+    	shift # past argument
+    	;;
+    	*)
+            # unknown option
+    		;;
+		esac
+		shift # past argument or value
+done
 
+if [[ -n $1 ]]; then
+    sample_dir=$1
+fi
 
-echo $dir
-
-exit
-
-### settings
-reads_limit=100000
-expected_length=3500
+echo
+echo -e 'sample_dir \t' $sample_dir
+echo -e 'script_dir \t' $script_dir
+echo -e 'bb \t\t' $bb
+echo -e 'ref \t\t' $ref
+echo -e 'reads_limit \t' $reads_limit
+echo -e 'expected_length ' $expected_length
+echo
 
 ### index the plasmid backbone and the reference
 smalt index -k 7 -s 2 plasmid $bb
 smalt index -k 7 -s 2 reference $ref
 
 ### loop over all fastq files
-list=$(find $run/Data/Intensities/BaseCalls | grep fastq.gz)
+list=$(find $sample_dir | grep fastq.gz)
+
 for i in $list; do
 	
 	echo sample $i
@@ -52,7 +80,7 @@ for i in $list; do
 	cd $sample
 		
 	### limit number of reads
-	seqtk sample $i $reads_limit > reads_sample.fastq
+	seqtk sample ../$i $reads_limit > reads_sample.fastq
 
 	### align against the plasmid backbone
 	echo aligning reads to plasmid backbone
@@ -67,7 +95,7 @@ for i in $list; do
 
 	### optim assembly
 	echo optim assembly of insert reads
-	python3.4 ../../../bin/optimassembly.py -f reads_insert.fastq -r ../$ref -l $expected_length > consensus.fasta
+	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r f$ref -l $expected_length > consensus.fasta
 	sed 's/NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
 		
 	### de novo assembly velvet
