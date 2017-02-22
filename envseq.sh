@@ -82,13 +82,15 @@ for i in $list; do
 	ELS=(${FILENAME//_/ })
 	sample=${ELS[0]}
 	
-	### create and change to director for each sample
-	mkdir $sample
-	cd $sample
-		
+	### create directory
+	mkdir -p $sample
+			
 	### limit number of reads
-	seqtk sample ../$i $reads_limit > reads_sample.fastq
-
+	seqtk sample $i $reads_limit > ${sample}/reads_sample.fastq
+	
+	### change to directory
+	cd $sample
+	
 	### align against the plasmid backbone
 	echo aligning reads to plasmid backbone
 	smalt map -n 28 -x -y 0.9 -c 0.9 -f samsoft -o reads_plasmid.sam ../plasmid reads_sample.fastq
@@ -104,19 +106,13 @@ for i in $list; do
 	echo optim assembly of insert reads
 	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r $reference -l $expected_length > consensus.fasta
 	sed 's/NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
-		
-	### de novo assembly velvet NOT IN USE
-	#echo velvet assembly of insert reads
-	#velveth $sample 29 -short -fastq reads_insert.fastq
-	#velvetg $sample -min_contig_lgth 2000
-	#sed 's/NODE/'$sample'_velvet/' $sample/contigs.fa >> ../${sample}_velvet_cons.fasta
 	
 	### remove temp files
-	rm reads_sample.fastq
+	#rm reads_sample.fastq
 	rm reads_plasmid.sam
 	rm reads_plasmid_sorted.bam
 	rm reads_insert.sam
 	rm reads_insert.fastq
-	
+
 	cd ../
 done
