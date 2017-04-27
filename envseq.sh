@@ -71,9 +71,9 @@ smalt index -k 7 -s 2 reference $reference
 list=$(find $sample_dir | grep fastq.gz)
 
 for i in $list; do
-	
+
 	echo sample $i
-	
+
 	### extract sample name, splits on "/" first and then on "_"
 	arrIN=(${i//// })
 	arrLEN=${#arrIN[@]}
@@ -81,16 +81,16 @@ for i in $list; do
 	FILENAME=${arrIN[$LAST]}
 	ELS=(${FILENAME//_/ })
 	sample=${ELS[0]}
-	
+
 	### create directory
 	mkdir -p $sample
-			
+
 	### limit number of reads
 	seqtk sample $i $reads_limit > ${sample}/reads_sample.fastq
-	
+
 	### change to directory
 	cd $sample
-	
+
 	### align against the plasmid backbone
 	echo aligning reads to plasmid backbone
 	smalt map -n 28 -x -y 0.9 -c 0.9 -f samsoft -o reads_plasmid.sam ../plasmid reads_sample.fastq
@@ -105,8 +105,8 @@ for i in $list; do
 	### optim assembly
 	echo optim assembly of insert reads
 	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r $reference -l $expected_length > consensus.fasta
-	sed 's/NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
-	
+	sed 's/consensus_contigs/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
+
 	### remove temp files
 	#rm reads_sample.fastq
 	rm reads_plasmid.sam
