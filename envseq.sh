@@ -105,7 +105,7 @@ for i in $list; do
 	### optim assembly
 	echo optim assembly of insert reads
 	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r $reference -l $expected_length > consensus.fasta
-	sed 's/consensus_contigs/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
+	sed 's/consensus_contigs\|NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
 
 	### remove temp files
 	#rm reads_sample.fastq
