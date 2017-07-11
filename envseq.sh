@@ -96,7 +96,7 @@ for i in $list; do
 	smalt map -n 28 -x -y 0.9 -c 0.9 -f samsoft -o reads_plasmid.sam ../plasmid reads_sample.fastq
 
 	### convert to bam and return only unmapped reads with samtools view -f 4
-	samtools view -Su reads_plasmid.sam | samtools sort - reads_plasmid_sorted
+	samtools view -Su reads_plasmid.sam | samtools sort -o reads_plasmid_sorted.bam -
 	samtools view -h -f 4 reads_plasmid_sorted.bam > reads_insert.sam
 
 	### convert to fastq
