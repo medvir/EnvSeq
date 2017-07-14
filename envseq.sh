@@ -108,7 +108,7 @@ for i in $list; do
 	sed 's/consensus_contigs\|NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
 
 	### remove temp files
-	#rm reads_sample.fastq
+	rm reads_sample.fastq
 	rm reads_plasmid.sam
 	rm reads_plasmid_sorted.bam
 	rm reads_insert.sam
