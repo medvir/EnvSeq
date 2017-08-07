@@ -1,4 +1,4 @@
-##OptimAssembly
+## OptimAssembly
 Viruses are characterized by, among other things, much smaller genome with
 respect to bacteria. As a consequence, the coverage obtained in massively
 parallel sequencing tends to be very high. This is not always good for
