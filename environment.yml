@@ -1,0 +1,44 @@
+name: EnvSeq
+channels:
+- bioconda
+- conda-forge
+- defaults
+- r
+dependencies:
+- bambamc=0.0.50=0
+- biopython=1.68=py34_0
+- emboss=6.5.7=2
+- mmtf-python=1.0.2=py34_0
+- muscle=3.8.1551=2
+- samtools=1.4.1=0
+- seqtk=1.2=0
+- smalt=0.7.6=0
+- velvet=1.2.10=1
+- ca-certificates=2017.7.27.1=0
+- certifi=2017.1.23=py34_0
+- curl=7.54.1=0
+- freetype=2.6.3=1
+- jpeg=9b=0
+- krb5=1.14.2=0
+- libpng=1.6.28=0
+- libssh2=1.8.0=1
+- libtiff=4.0.6=7
+- msgpack-python=0.4.8=py34_0
+- ncurses=5.9=10
+- openssl=1.0.2l=0
+- pillow=4.0.0=py34_0
+- pip=9.0.1=py34_0
+- python=3.4.5=2
+- readline=6.2=0
+- setuptools=32.3.1=py34_0
+- sqlite=3.13.0=1
+- tk=8.5.19=2
+- wheel=0.29.0=py34_0
+- xz=5.2.2=0
+- zlib=1.2.11=0
+- libgcc=5.2.0=0
+- mkl=2017.0.3=0
+- numpy=1.13.0=py34_0
+- reportlab=3.3.0=py34_0
+prefix: /home/schmutz.stefan/miniconda3/envs/EnvSeq
+
