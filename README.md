@@ -10,9 +10,16 @@ Package for HIV-1 env plasmid sequencing analysis with optimassembly.
 
 `HXB2.fasta` is the reference for HIV-1
 
+### Use conda environment from file
+To ensure you have all dependencies needed for SmaltAlign installed you can use the `environment.yml` file.  
+First you need to have [Conda](https://conda.io/docs/install/quick.html) installed).  
+With the command `conda env create -f <path>/environment.yml` you will create a copy of the SmaltAlign environment.  
+You enter the environment with the command `source activate EnvSeq` (and leave it with `source deactivate`).  
+For more information visit following link to [Managing environments](https://conda.io/docs/using/envs.html).
+
 ### Usage
 	usage: envseq.sh [options] ...
-	
+
 	OPTIONS
 	-r, --reference		reference (default HXB2.fasta)
 	-b, --backbone		plasmid backbone to be subtracted (default pcDNA3_bb.fasta)
