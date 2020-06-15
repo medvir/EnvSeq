@@ -1,14 +1,18 @@
 # Envelope Sequencing
-Package for HIV-1 env plasmid sequencing analysis with optimassembly.
+Script for HIV-1 env plasmid sequencing analysis.
 
-## envseq.sh
-`envseq.sh` is the main script for HIV-1 env plasmid sequencing analysis. First, it subtracts reads aligning to the backbone of the plasmid with smalt/samtools. Then it de novo assembles the insert using optimassembly. Default settings use pcDNA3 as a backbone vector and HXB2 as reference strain. Input is a directory containing gzipped fastq files. Output is a fast file SAMPLE_cons.fasta.
+## envseq.py
+This script removes all sequences which map to the plasmid backbone given
+(python variable plasmid_backbone), performs a denovo assembly using [VelvetOptimiser](https://github.com/tseemann/VelvetOptimiser)
+and returns the sequence of the insert in the same orientation as the reference
+sequence given (python variable plasmid_insert).
 
-`optimassembly.py` is from [ozagordi](https://github.com/ozagordi)
+Caveats:  
+- It's assumed that the sequence is clonal (no ambiguous positions)
+- If multiple contigs are present, only the longest one is taken.
+- If the identity of the pairwise sequence alignment to the given reference is below 50%, it's assumed that the contig is in reverse complement orientation, this could however also have other reasons.  
 
-`pcDNA3_bb.fasta` is the reference for the plasmid (backbone only!)
-
-`HXB2.fasta` is the reference for HIV-1
+Regarding these points, it's therefore advised to look at the results (sequence lengths and maybe do a multiple sequence alignment) to spot obvious errors.
 
 ### Use conda environment from file
 To ensure you have all dependencies needed for EnvSeq installed you can use the `environment.yml` file.  
@@ -18,10 +22,6 @@ You enter the environment with the command `source activate EnvSeq` (and leave i
 For more information visit following link to [Managing environments](https://conda.io/docs/using/envs.html).
 
 ### Usage
-	usage: envseq.sh [options] ...
-
-	OPTIONS
-	-r, --reference		reference (default HXB2.fasta)
-	-b, --backbone		plasmid backbone to be subtracted (default pcDNA3_bb.fasta)
-	-n, --reads_limit	limit number of reads (default 100'000)
-	-l, --expected_length	expected insert length (default 3500)
+All files need to be in the same directory, this includes the reference sequences, sequencing reads and the envseq.py script.  
+It can then be executed as follows:  
+`python envseq.py`
