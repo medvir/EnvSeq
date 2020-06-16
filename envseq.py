@@ -55,11 +55,11 @@ for file in glob.glob("*.fastq*"):
     gaps = gaps_line[gaps_line.find("(")+1:gaps_line.find("%")]
     gaps = float(gaps)
 
-    # if the sum of identity and gaps is below 91% it's assumed the orientation is reverse complement
+    # if the identity is below 50% it's assumed the orientation is reverse complement
     # this could of course also have different reasons, it's therefore advised
     # to create a multiple sequence alignment of all final sequences to verify
     # the result
-    if identity + gaps < 91:
+    if identity < 50:
         os.system(f"seqkit seq -v -p -r -t 'DNA' -w 0 {sample}/{sample}.fasta > {sample}/{sample}_rc.fasta")
         os.system(f"cp {sample}/{sample}_rc.fasta {sample}.fasta")
     else:
