@@ -2,15 +2,15 @@ import os
 import glob
 
 # all files need to be in the same directory,
-# this includes the reference sequences, sequencing reads and this script
+# this includes the reference sequences (in a references folder), sequencing reads and this script
 
 # backbone is used to remove reads mapping to it
-plasmid_backbone = "pcDNA3_1.fasta"
+plasmid_backbone = "references/pcDNA3_1.fasta"
 # insert sequence is used to find the right orientation of the contigs
-plasmid_insert = "HXB2_env.fasta"
+plasmid_insert = "references/HXB2_insert.fasta"
 
 
-os.system(f"smalt index -k 7 -s 2 plasmid {plasmid_backbone}")
+os.system(f"smalt index -k 7 -s 2 references/plasmid {plasmid_backbone}")
 
 # run the following script for all fastq files present in the current directory
 for file in glob.glob("*.fastq*"):
@@ -19,11 +19,11 @@ for file in glob.glob("*.fastq*"):
 
     os.system(f"mkdir {sample}")
 
-    # only sample maximum 500'000 reads to increase speed
-    os.system(f"seqtk sample {file} 500000 > {sample}/reads_sample.fastq")
+    # only sample maximum 1'000'000 reads to increase speed
+    os.system(f"seqtk sample {file} 1000000 > {sample}/reads_sample.fastq")
 
     # map sampled reads against the plasmid backbone and only extract the remaining
-    os.system(f"smalt map -n 28 -x -y 0.9 -c 0.9 -f samsoft -o {sample}/reads_plasmid.sam plasmid {sample}/reads_sample.fastq")
+    os.system(f"smalt map -n 28 -x -y 0.9 -c 0.9 -f samsoft -o {sample}/reads_plasmid.sam references/plasmid {sample}/reads_sample.fastq")
     os.system(f"samtools view -Su {sample}/reads_plasmid.sam | samtools sort -o {sample}/reads_plasmid_sorted.bam -")
     os.system(f"samtools view -h -f 4 {sample}/reads_plasmid_sorted.bam > {sample}/reads_insert.sam")
     os.system(f"seqret {sample}/reads_insert.sam fastq::{sample}/reads_insert.fastq")
@@ -46,16 +46,20 @@ for file in glob.glob("*.fastq*"):
     alignment_lines = alignment.readlines()
     alignment.close()
 
-    # extract the percent identity to determine the current orientation
+    # extract the percent identity and gaps to determine the current orientation
     identity_line = alignment_lines[23]
     identity = identity_line[identity_line.find("(")+1:identity_line.find("%")]
     identity = float(identity)
 
-    # if the identity is below 50% it's assumed the orientation is reverse complement
+    gaps_line = alignment_lines[25]
+    gaps = gaps_line[gaps_line.find("(")+1:gaps_line.find("%")]
+    gaps = float(gaps)
+
+    # if the sum of identity and gaps is below 91% it's assumed the orientation is reverse complement
     # this could of course also have different reasons, it's therefore advised
     # to create a multiple sequence alignment of all final sequences to verify
     # the result
-    if identity < 50:
+    if identity + gaps < 91:
         os.system(f"seqkit seq -v -p -r -t 'DNA' -w 0 {sample}/{sample}.fasta > {sample}/{sample}_rc.fasta")
         os.system(f"cp {sample}/{sample}_rc.fasta {sample}.fasta")
     else:
