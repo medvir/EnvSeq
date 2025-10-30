@@ -4,20 +4,30 @@
 script_dir=$( dirname "$(readlink -f "$0")" )
 backbone=${script_dir}/pcDNA3_bb.fasta
 reference=${script_dir}/HXB2.fasta
-reads_limit=100000
+sample_dir=/home/ubuntu/data/
+reads_limit=ALL
 expected_length=3500
 
 ### arguments
-if [ $# == 0 ]; then
-	echo
-	echo 'enveq.sh [options] ...'
-	echo
-	echo '-r, --reference        reference (default HXB2.fasta)'
-	echo '-b, --backbone         plasmid backbone to be subtracted (default pcDNA3_bb.fasta'
-	echo '-n, --reads_limit      limit number of reads (default 100000)'
-	echo '-l, --expected_length  expected insert length (default 3500)'
-	echo
-	exit
+show_help() {
+    echo
+    echo "Usage: enveq.sh [options] [sample_dir]"
+    echo
+    echo "Options:"
+    echo "  -r, --reference        Reference file (default: HXB2.fasta)"
+    echo "  -b, --backbone         Plasmid backbone file to subtract (default: pcDNA3_bb.fasta)"
+    echo "  -n, --reads_limit      Limit number of reads (default: ALL)"
+    echo "  -l, --expected_length  Expected insert length (default: 3500)"
+    echo "  -h, --help             Show this help message and exit"
+    echo
+    echo "If no arguments are given, defaults will be used."
+    echo
+}
+
+### handle help flag
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+    exit 0
 fi
 
 while [[ $# -gt 1 ]]; do
@@ -48,6 +58,8 @@ done
 
 if [[ -n $1 ]]; then
     sample_dir=$1
+else
+    echo "No sample directory provided — running with defaults."
 fi
 
 ### convert relative to absolute path
@@ -86,7 +98,11 @@ for i in $list; do
 	mkdir -p $sample
 
 	### limit number of reads
-	seqtk sample $i $reads_limit > ${sample}/reads_sample.fastq
+	if [[ $reads_limit != "ALL" ]]; then
+		seqtk sample $i $reads_limit > ${sample}/reads_sample.fastq
+	else
+		zcat "$i" > "${sample}/reads_sample.fastq"
+	fi
 
 	### change to directory
 	cd $sample
@@ -104,7 +120,7 @@ for i in $list; do
 
 	### optim assembly
 	echo optim assembly of insert reads
-	python3.4 ${script_dir}/optimassembly.py -f reads_insert.fastq -r $reference -l $expected_length > consensus.fasta
+	python ${script_dir}/optimassembly.py -f reads_insert.fastq -r $reference -l $expected_length > consensus.fasta
 	sed 's/consensus_contigs\|NODE/'$sample'_optim/' consensus.fasta > ../${sample}_cons.fasta
 
 	### remove temp files
