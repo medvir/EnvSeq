@@ -21,6 +21,7 @@ show_help() {
     echo "  -h, --help             Show this help message and exit"
     echo
     echo "If no arguments are given, defaults will be used."
+	echo "If no sample directory is provided, /home/ubuntu/data/ will be used."
     echo
 }
 
