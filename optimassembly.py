@@ -106,7 +106,7 @@ def compute_msa(ref):
     optlog.info('All %d contigs written to all_contigs.fasta' % allc)
 
     optlog.info('Trying multiple alignment with muscle')
-    exe_string = 'muscle -maxiters 1 -diags -in all_contigs.fasta -out msa.fasta &> log_muscle.log'
+    exe_string = 'muscle -maxiters 1 -diags -in all_contigs.fasta -out msa.fasta'# &> log_muscle.log'
     msa = subprocess.call(exe_string, shell=True)
     if msa > 1:
         optlog.error('Error %d returned trying muscle' % msa)
